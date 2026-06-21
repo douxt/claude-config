@@ -73,7 +73,7 @@
 
 制定任何涉及代码改动的计划时，**计划本身必须包含 worktree 创建步骤**，作为第一个实施动作：
 
-- 单仓库项目：计划首步写 `EnterWorktree` 或 `wt create <任务名>`
+- 单仓库项目：计划首步写 `wt create <任务名>`
 - 多仓库项目：计划首步写 `bash ~/bin/wt create <任务名>`
 - 仅文档/配置修改（不改代码）→ 豁免
 
@@ -84,14 +84,14 @@
 ### 核心原则
 - 所有开发在 worktree 中隔离进行，**禁止在原始仓库目录下直接编辑代码**
 - 一个 worktree 对应一个逻辑改动，合并后立即清理
-- 单仓库项目用 `EnterWorktree`，多仓库项目用 `wt create`
+- 统一用 `wt create` 创建 worktree
 - PreToolUse hook 拦截原始仓库下的 Edit/Write，强制先进 worktree
 
 ### 硬性禁令
 | 禁令 | 正确做法 |
 |------|---------|
 | 禁止 `rm -rf` worktree 目录 | 用 `git worktree remove` 或工具清理 |
-| 禁止在原始仓库下直接编辑代码 | 先 wt create 或 EnterWorktree |
+| 禁止在原始仓库下直接编辑代码 | 先 wt create |
 | 禁止 `cd <path> && git` | 用 `git -C <path> <command>` 避免沙箱弹窗 |
 | 禁止 `git checkout -- <file>` | 用 `git stash` 或 `.bak` 恢复 |
 | 禁止跨 worktree 直接复制文件 | 共享代码通过 git 对象库自然共享 |
@@ -103,7 +103,7 @@
 ### 工作流
 1. 用户提出改动需求
 2. Claude 尝试 Edit/Write → `PreToolUse` hook 检测到在原始仓库下 → **拒绝并提示先进 worktree**
-3. Claude 收到拦截 → 调用 `EnterWorktree` 或 `wt create` 创建隔离 worktree
+3. Claude 收到拦截 → 调用 `wt create` 创建隔离 worktree
 4. 在 worktree 内完成开发、测试、提交
 5. worktree 外不直接编辑代码
 
