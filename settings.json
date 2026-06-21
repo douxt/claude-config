@@ -1,0 +1,135 @@
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.deepseek.com/anthropic",
+    "ANTHROPIC_AUTH_TOKEN": "sk-8480417eed0046b1851d2b5fa56e5e97",
+    "ANTHROPIC_MODEL": "deepseek-v4-pro[1m]",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "deepseek-v4-flash[1m]",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-pro[1m]",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "deepseek-v4-pro[1m]",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "deepseek-v4-flash[1m]",
+    "CLAUDE_CODE_EFFORT_LEVEL": "max",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(*)",
+      "Bash(claude --print * --settings ~/.claude/settings-review.json *)",
+      "Read(*)",
+      "Glob(*)",
+      "Grep(*)",
+      "Edit(*)",
+      "Write(*)",
+      "WebSearch",
+      "mcp__plugin_everything-claude-code_exa__web_search_exa",
+      "Skill(firecrawl-search)",
+      "Skill(firecrawl-search:*)",
+      "mcp__plugin_everything-claude-code_exa__web_fetch_exa",
+      "Skill(superpowers:brainstorming)",
+      "Skill(superpowers:brainstorming:*)",
+      "mcp__codegraph__codegraph_search",
+      "mcp__codegraph__codegraph_context",
+      "mcp__codegraph__codegraph_callers",
+      "mcp__codegraph__codegraph_callees",
+      "mcp__codegraph__codegraph_impact",
+      "mcp__codegraph__codegraph_node",
+      "mcp__codegraph__codegraph_status",
+      "mcp__codegraph__codegraph_trace"
+    ],
+    "deny": [
+      "Bash(docker rm *)"
+    ],
+    "additionalDirectories": [
+      "/home/dou/.claude",
+      "/mnt/d/Github/workstation-PLC"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /home/dou/.claude/scripts/safety-rules.sh",
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/dou/.local/bin/rtk hook claude"
+          },
+          {
+            "type": "command",
+            "command": "bash /home/dou/.claude/hooks/bash-firewall.sh",
+            "timeout": 3000
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /home/dou/.claude/hooks/file-guard.sh",
+            "timeout": 3000
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /home/dou/.claude/hooks/file-guard.sh",
+            "timeout": 3000
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /home/dou/.claude/hooks/audit-log.sh",
+            "timeout": 3000
+          }
+        ]
+      }
+    ],
+    "SessionStop": []
+  },
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true,
+    "everything-claude-code@everything-claude-code": true,
+    "skill-creator@claude-plugins-official": true,
+    "github@claude-plugins-official": true,
+    "firecrawl@claude-plugins-official": true,
+    "explanatory-animations@nightzpy-plugins": true
+  },
+  "extraKnownMarketplaces": {
+    "nightzpy-plugins": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/NightZpy/explanatory-animations-skill.git"
+      }
+    }
+  },
+  "autoUpdatesChannel": "latest",
+  "theme": "auto",
+  "effortLevel": "max",
+  "statusLine": {
+    "type": "command",
+    "command": "/home/dou/.nvm/versions/node/v18.18.2/bin/claudeline run '[cyan:bold:claude:model] sep:pipe ctx:tokens sep:pipe ctx:percent'",
+    "padding": 0,
+    "refreshInterval": 5
+  },
+  "model": "sonnet"
+}
