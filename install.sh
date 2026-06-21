@@ -11,6 +11,30 @@ echo "源: $SRC"
 echo "目标: $TARGET"
 echo ""
 
+ensure_wtrepos() {
+  declare -A MAP=(
+    ["UMES3"]="$HOME/projects/UMES3\n$HOME/projects/fa56-php"
+    ["fa56-php"]="$HOME/projects/fa56-php"
+    ["udimc_store"]="$HOME/projects/udimc_store\n$HOME/projects/fa56-php"
+    ["MAF-Hub"]="$HOME/dev/MAF-Hub"
+    ["cc-stack"]="$HOME/cc-stack"
+    ["CeLiangBen"]="$HOME/projects/CeLiangBen\n$HOME/projects/fa56-php"
+    ["claude-config"]="$HOME/projects/claude-config"
+  )
+  for name in "${!MAP[@]}"; do
+    local target
+    case "$name" in
+      MAF-Hub) target="$HOME/dev/$name/.wtrepos" ;;
+      cc-stack) target="$HOME/cc-stack/.wtrepos" ;;
+      *) target="$HOME/projects/$name/.wtrepos" ;;
+    esac
+    [ -f "$target" ] && continue
+    mkdir -p "$(dirname "$target")"
+    printf '%b' "${MAP[$name]}" > "$target"
+    echo "  ✅ .wtrepos → $target"
+  done
+}
+
 link_file() {
   local rel="$1"
   local src="$SRC/$rel"
@@ -71,5 +95,8 @@ if [ -d "$SRC/skills" ]; then
   done
 fi
 
+echo ""
+echo "--- .wtrepos ---"
+ensure_wtrepos
 echo ""
 echo "✅ 安装完成。重载 VSCode 窗口生效。"
