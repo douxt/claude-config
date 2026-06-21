@@ -90,6 +90,15 @@
             "timeout": 3000
           }
         ]
+      },
+      {
+        "matcher": "EnterWorktree",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /home/dou/.claude/hooks/block-enter-worktree.sh"
+          }
+        ]
       }
     ],
     "PostToolUse": [
