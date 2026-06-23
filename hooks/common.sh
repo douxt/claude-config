@@ -83,7 +83,7 @@ extract_target_files() {
 
   # tee file, tee -a file
   local tee_targets
-  tee_targets=$(echo "$cmd" | grep -oP 'tee\s+(?:-a\s+)?(\S+)' 2>/dev/null || true)
+  tee_targets=$(echo "$cmd" | grep -oP '\btee\s+(?:-a\s+)?(\S+)' 2>/dev/null || true)
   if [ -n "$tee_targets" ]; then
     while IFS= read -r token; do
       local file
@@ -94,7 +94,7 @@ extract_target_files() {
 
   # sed -i file, awk -i inplace file, perl -i file
   local inplace
-  inplace=$(echo "$cmd" | grep -oP '(?:sed|awk|perl)\s+.*-i[^;|&]*\s+(\S+)' 2>/dev/null || true)
+  inplace=$(echo "$cmd" | grep -oP '\b(?:sed|awk|perl)\s+.*-i[^;|&]*\s+(\S+)' 2>/dev/null || true)
   if [ -n "$inplace" ]; then
     local file
     file=$(echo "$inplace" | awk '{print $NF}')
@@ -115,7 +115,7 @@ extract_target_files() {
 
   # dd of=file
   local dd_targets
-  dd_targets=$(echo "$cmd" | grep -oP 'dd\s+.*of=(\S+)' 2>/dev/null || true)
+  dd_targets=$(echo "$cmd" | grep -oP '\bdd\s+.*of=(\S+)' 2>/dev/null || true)
   if [ -n "$dd_targets" ]; then
     local file
     file=$(echo "$dd_targets" | sed -E 's/.*of=//; s/\s.*$//')
