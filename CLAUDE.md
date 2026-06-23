@@ -100,37 +100,14 @@
 - 默认值 `origin/master`
 - **CeLiangBen 项目**：长期在 `old` 分支开发，`wt` 的基准分支设为 `"head"`（基于本地当前分支），合入目标为 `old`
 
-### 工作流
+### 工作流与完结
+
 1. 用户提出改动需求
-2. Claude 尝试 Edit/Write → `PreToolUse` hook 检测到在原始仓库下 → **拒绝并提示先进 worktree**
-3. Claude 收到拦截 → 调用 `wt create` 创建隔离 worktree
-4. 在 worktree 内完成开发、测试、提交
-5. worktree 外不直接编辑代码
+2. Claude 尝试 Edit/Write → PreToolUse hook 拦截 → 调用 `wt create` 创建 worktree
+3. 在 worktree 内完成开发、测试、提交
+4. 合入 master：① `git status` 确认改动 → ② 按项目跑编译/语法检查 → ③ `git diff master...HEAD` 审查 → ④ 功能验证 → ⑤ `git pull --rebase origin master` → ⑥ `git checkout master && git merge <分支>` → ⑦ `git push origin master` → ⑧ 清理 worktree 与分支
 
-### 完结流程（合入 master 前必经检测）
-
-Worktree 开发完毕合入 master 前，按以下步骤执行。**各步骤的具体命令由各项目 CLAUDE.md 定义，本流程仅列骨架。**
-
-```
-① 状态检查     → git status                    确认改动完整、无漏提交
-② 编译/语法检查 → 按项目配置跑检查命令          JS 跑 babel，PHP 跑 php -l，等
-③ 差异审查     → git diff master...HEAD         肉眼审查改动内容是否准确
-④ 功能验证     → 本地跑 API 测试或手动验证       确保改动有效
-⑤ Rebase       → git pull --rebase origin master 基于最新代码解决冲突
-⑥ 合并到 master → git checkout master && merge   合入主线
-⑦ 推送         → git push origin master         远程同步
-⑧ 清理         → 删 worktree、删本地/远程分支    不留垃圾
-```
-
-> **注意：** ①②③④ 在步骤 ⑤ 之前执行，因为 rebase 前要确保当前代码是正确的。
-> 如果 rebase 有冲突，解决后重复 ②③④ 再合并。
-
-## Worktree 内仍适用原有安全规则
-进入 worktree 后，以下规则不变：
-- 改前 `cp file.php file.php.bak`
-- 改完即提交，不攒批
-- 全局替换走 `grep -n` 流程
-- 恢复后 `git diff --stat` + `grep` + API 验证
+> ①②③④ 在 rebase 前执行。冲突后重复 ②③④。
 
 ### 已知限制
 - **子代理可绕过 hook**：`PreToolUse` 钩子在子代理中不可靠，不依赖它作唯一防线
