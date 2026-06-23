@@ -38,7 +38,7 @@ while IFS= read -r target; do
 
   # 豁免路径
   case "$abs" in
-    /tmp/*|/dev/*|/proc/*|/sys/*) continue ;;
+    /tmp/*|/dev/stdout|/dev/stderr|/dev/fd/*|/dev/*|/proc/*|/sys/*) continue ;;
     "$HOME/.claude/logs"*) continue ;;
     /run/*|/var/run/*) continue ;;
   esac

@@ -45,6 +45,10 @@ is_in_worktree() {
 
 resolve_relative_path() {
   local path="$1" cwd="${2:-$PWD}"
+  # 包含 & 后跟数字或 - 的不是合法文件路径（fd 复制残留）
+  case "$path" in
+    *'&'[0-9]* | *'&-'*) return 1 ;;
+  esac
   case "$path" in
     /*) echo "$path" ;;
     ~*) echo "${HOME}${path:1}" ;;
@@ -58,14 +62,21 @@ extract_target_files() {
   local cmd="$1"
   local results=()
 
+  # 先清掉 fd 复制/关闭（2>&1、>&2、2>&-），这些不涉及文件
+  local clean_cmd
+  clean_cmd=$(echo "$cmd" | sed -E 's/[12]?>&[0-9]+//g; s/[12]?>&-//g')
   # 重定向 > file, >> file, &> file, 1> file, 2> file
   # 用 grep -o 提取 > 后的第一个非空白 token
   local redirects
-  redirects=$(echo "$cmd" | grep -oP '[12&]?>>?(?:\s*\S+)' 2>/dev/null || true)
+  redirects=$(echo "$clean_cmd" | grep -oP '[12&]?>>?(?:\s*\S+)' 2>/dev/null || true)
   if [ -n "$redirects" ]; then
     while IFS= read -r token; do
       local file
       file=$(echo "$token" | sed -E 's/^[12&]?>>?\s*//; s/\s.*$//')
+      # 防御：如果剥离后仍残留 fd 引用（&N、&-），跳过
+      case "$file" in
+        '&'[0-9]* | '&-') continue ;;
+      esac
       [ -n "$file" ] && results+=("$file")
     done <<< "$redirects"
   fi
