@@ -3,6 +3,7 @@
     "allow": [
       "Bash(*)",
       "Bash(claude --print * --settings ~/.claude/settings-review.json *)",
+      "Bash(claude -p --model * --permission-mode auto --settings ~/.claude/settings-review.json --output-format json *)",
       "Read(*)",
       "Glob(*)",
       "Grep(*)",

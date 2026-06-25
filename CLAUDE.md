@@ -109,9 +109,11 @@
      b. 改代码 → 浏览器热加载验证 → 改到满意
      c. `wt commit <任务名> "消息"` 提交
      d. `wt dev-stop` 停止开发环境
-4. 合入 master：① `git status` 确认改动 → ② 按项目跑编译/语法检查 → ③ `git diff master...HEAD` 审查 → ④ 功能验证 → ⑤ `git pull --rebase origin master` → ⑥ `git checkout master && git merge <分支>` → ⑦ `git push origin master` → ⑧ 清理 worktree 与分支
+4. 合入 master：① `git status` 确认改动 → ② 按项目跑编译/语法检查 → ③ `git diff master...HEAD` 审查改动量，**确认无意外回退或多余文件** → ④ 功能验证 → ⑤ `git pull --rebase origin master` → ⑥ 分支 `git rebase origin/master`（解决冲突）→ ⑦ `git checkout master && git merge <分支>` → ⑧ `git push origin master` → ⑨ 清理 worktree 与分支
 
 > ①②③④ 在 rebase 前执行。冲突后重复 ②③④。
+>
+> **合并安全铁律**：合前分支必须 rebase 到最新 master；合后必须 `git diff master@{1} master` 确认无意外代码回退；合并后立即推送，不在本地滞留 merge 结果；stash pop 冲突不可跳过、必须先解决再继续。
 
 ### 已知限制
 - **子代理可绕过 hook**：`PreToolUse` 钩子在子代理中不可靠，不依赖它作唯一防线
