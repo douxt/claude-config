@@ -104,7 +104,11 @@
 
 1. 用户提出改动需求
 2. Claude 尝试 Edit/Write → PreToolUse hook 拦截 → 调用 `wt create` 创建 worktree
-3. 在 worktree 内完成开发、测试、提交
+3. 在 worktree 内开发测试提交：
+     a. `wt dev` 一键启动前后端（自动分配端口、隔离 Docker、链接 node_modules）
+     b. 改代码 → 浏览器热加载验证 → 改到满意
+     c. `wt commit <任务名> "消息"` 提交
+     d. `wt dev-stop` 停止开发环境
 4. 合入 master：① `git status` 确认改动 → ② 按项目跑编译/语法检查 → ③ `git diff master...HEAD` 审查 → ④ 功能验证 → ⑤ `git pull --rebase origin master` → ⑥ `git checkout master && git merge <分支>` → ⑦ `git push origin master` → ⑧ 清理 worktree 与分支
 
 > ①②③④ 在 rebase 前执行。冲突后重复 ②③④。
@@ -113,7 +117,7 @@
 - **子代理可绕过 hook**：`PreToolUse` 钩子在子代理中不可靠，不依赖它作唯一防线
 - **记忆碎片化**：不同 worktree 路径下 `~/.claude/projects/` 会分裂记忆和会话历史。
   关键决策、踩坑记录必须写 CLAUDE.md 或本项目 `memory/` 目录，确保跨 worktree 可查
-- **多 worktree 并发**：同时运行 3-5 个 worktree 时，注意 Docker 服务、端口等共享资源冲突
+- **多 worktree 并发**：`wt dev` 自动端口隔离 + Docker 项目名隔离，多 worktree 共存不冲突。但每个 webpack 实例 ~500MB 内存，建议同时不超过 3 个
 
 ## 文件写入多层防御
 
@@ -134,6 +138,9 @@
 跨前后端仓库（UMES3 + fa56-php）同时修改时使用 `wt` 工具：
 
 - 创建新任务：`bash ~/bin/wt create <任务名>`
+- 启动开发环境：`wt dev [任务名]`
+- 停止开发环境：`wt dev-stop [任务名]`
+- 查看环境状态：`wt dev-status [任务名]`
 - 提交两边改动：`bash ~/bin/wt commit <任务名> "消息"`
 - 查看两仓库状态：`bash ~/bin/wt status <任务名>`
 - 清理：`bash ~/bin/wt cleanup <任务名>`
