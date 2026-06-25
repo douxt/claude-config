@@ -109,7 +109,8 @@
      b. 改代码 → 浏览器热加载验证 → 改到满意
      c. `wt commit <任务名> "消息"` 提交
      d. `wt dev-stop` 停止开发环境
-4. 合入 master：① `git status` 确认改动 → ② 按项目跑编译/语法检查 → ③ `git diff master...HEAD` 审查改动量，**确认无意外回退或多余文件** → ④ 功能验证 → ⑤ `git pull --rebase origin master` → ⑥ 分支 `git rebase origin/master`（解决冲突）→ ⑦ `git checkout master && git merge <分支>` → ⑧ `git push origin master` → ⑨ 清理 worktree 与分支
+     e. **停止并告知用户**：改动已提交，请在 worktree 中手动测试验证。**不主动合并**，等用户明确指示。
+4. **用户明确要求合并时**，合入 master：① `git status` 确认改动 → ② 按项目跑编译/语法检查 → ③ `git diff master...HEAD` 审查改动量，**确认无意外回退或多余文件** → ④ 功能验证 → ⑤ `git pull --rebase origin master` → ⑥ 分支 `git rebase origin/master`（解决冲突）→ ⑦ `git checkout master && git merge <分支>` → ⑧ `git push origin master` → ⑨ 清理 worktree 与分支
 
 > ①②③④ 在 rebase 前执行。冲突后重复 ②③④。
 >
