@@ -199,3 +199,22 @@ Use codegraph for **structural** questions — what calls what, what would break
 
 The MCP server returns "not initialized." Ask the user: *"I notice this project doesn't have CodeGraph initialized. Want me to run `codegraph init -i` to build the index?"*
 <!-- CODEGRAPH_END -->
+
+## 计划文件管理（防覆盖）
+
+- 每次新计划创建新文件，文件名含日期+主题，禁止覆盖已有计划文件
+- 计划执行完毕后，关键设计决策（权限边界、接口约束、架构取舍、被拒绝的方案）必须提取为 ADR
+- ADR 存放：项目有 `docs/decisions/` 则写项目，否则写 `~/.claude/plans/decisions/`
+- 旧计划文件保留不删；计划只存执行步骤，不可变决策回流正式文档
+
+### ADR 格式
+
+```markdown
+# ADR-NNN: <标题>
+## 状态：已采纳 / 已废弃
+## 日期：YYYY-MM-DD
+## 背景
+## 决策
+## 后果
+## 拒绝的方案
+```

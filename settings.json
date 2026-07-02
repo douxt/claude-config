@@ -2,6 +2,7 @@
   "permissions": {
     "allow": [
       "Bash(*)",
+      "Monitor(*)",
       "Bash(claude --print * --settings ~/.claude/settings-review.json *)",
       "Bash(claude -p --model * --permission-mode auto --settings ~/.claude/settings-review.json --output-format json *)",
       "Read(*)",
@@ -101,6 +102,16 @@
             "timeout": 3000
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /home/dou/.claude/hooks/plan-backup.sh",
+            "timeout": 3000
+          }
+        ]
       }
     ],
     "SessionStop": []
@@ -123,7 +134,7 @@
   },
   "autoUpdatesChannel": "latest",
   "theme": "auto",
-  "effortLevel": "max",
+  "effortLevel": "xhigh",
   "statusLine": {
     "type": "command",
     "command": "/home/dou/.nvm/versions/node/v18.18.2/bin/claudeline run '[cyan:bold:claude:model] sep:pipe ctx:tokens sep:pipe ctx:percent'",
