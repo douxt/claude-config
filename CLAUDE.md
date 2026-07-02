@@ -154,6 +154,16 @@
 - 查看两仓库状态：`bash ~/bin/wt status <任务名>`
 - 清理：`bash ~/bin/wt cleanup <任务名>`
 
+### 无 wt 环境 fallback
+
+当 `wt` 命令不可用时（NAS/Docker/CI），用 git 原生命令：
+
+| wt 命令 | git fallback |
+|---------|-------------|
+| `wt create <name>` | `git worktree add .claude/worktrees/<name> -b <name>` |
+| `wt commit <name> "msg"` | `git -C .claude/worktrees/<name> add ... && git commit` |
+| `wt cleanup <name>` | `git worktree remove .claude/worktrees/<name> && git branch -D <name>` |
+
 ## 提交流程（全局硬性规则）
 
 所有仓库已配置全局 pre-commit hook（`~/.git-hooks/pre-commit`），**禁止直接 `git commit`**。
